@@ -36,3 +36,36 @@
     transform: rotate(360deg);
   }
 }
+
+/*
+Custom CSS
+*/
+
+.piano-container {
+  position: absolute;
+  height: 200px;
+  border: 5px solid black;
+}
+
+.white-note {
+  height: 100%;
+  width: 50px;
+  background: white;
+  float: left;
+  border-right: 1px solid black;
+  position: relative;
+}
+
+.black-note {
+  position: absolute;
+  height: 65%;
+  width: 55%;
+  z-index: 1;
+  background: #777;
+  left: 68%;
+}
+
+.controls-container {
+  position: relative;
+  
+}
