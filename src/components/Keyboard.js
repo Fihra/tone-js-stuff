@@ -47,8 +47,8 @@ const volumeManager = {
 const Keyboard = () => {
 
     const [osc, setOsc] = useState(SynthManager);
-    const [volume, setVolume] = useState(volumeManager);
-    const [testVolume, setTestVolume] = useState(10);
+    // const [volume, setVolume] = useState(volumeManager);
+    const [volume, setVolume] = useState(10);
 
     useEffect(() => {
         // mainVolume = new Tone.Volume({
@@ -56,24 +56,19 @@ const Keyboard = () => {
         // });
     }, [])
 
-    useEffect(() => {
-        // console.log(volumeManager.vol);
-        
-    }, []);
-
     const playNote = (note) => {
         const timeNow = Tone.now();
         let savedNote = Tone.Frequency(note, "midi").toNote();
-        // osc.main.chain(volumeManager.vol, Tone.Master)
-        osc.main.connect(volumeManager.vol);
+        // osc.main.chain(volumeManager.vol)
+        osc.main.volume.value = volume;
         osc.main.triggerAttack(savedNote, timeNow).toDestination();
     }
 
     const stopNote = (note) => {
         const timeNow = Tone.now();
         let savedNote = Tone.Frequency(note, "midi").toNote();
-        // osc.main.chain(volumeManager.vol, Tone.Master)
-        osc.main.connect(volumeManager.vol);
+        // osc.main.chain(volumeManager.vol)
+        osc.main.volume.value = volume;
         osc.main.triggerRelease(savedNote, timeNow + 0.1).toDestination();
     }
 
@@ -90,16 +85,12 @@ const Keyboard = () => {
     }
 
     const handleVolume = (event) => {
-        let newVolume = new Tone.Volume({
-            volume: event.target.value
-        })
-        // console.log(newVolume);
-        setVolume({vol: newVolume})
-    }
-
-    const handleSecondChange = (event) => {
-        console.log(event.target.value);
-        setTestVolume(event.target.value);
+        event.persist();
+        // let newVolume = new Tone.Volume({
+        //     volume: event.target.value
+        // })
+        // setVolume({vol: newVolume})
+        setVolume(event.target.value);
     }
 
     return(
@@ -116,8 +107,11 @@ const Keyboard = () => {
                 {SynthChoice()}
             </select>
             <div className="controls-container">
-            <label>Volume: {volume.vol._unmutedVolume}</label>
-            <input type='range' min='-60' max='100' value={volume.vol._unmutedVolume} onChange={(e) => handleVolume(e)}></input>
+            {/* <label>Volume: {volume.vol._unmutedVolume}</label> */}
+            <label>Volume: {volume}</label>
+
+            {/* <input type='range' min='-60' max='100' value={volume.vol._unmutedVolume} onChange={(e) => handleVolume(e)}></input> */}
+            <input type='range' min='-60' max='100' value={volume} onChange={(e) => handleVolume(e)}></input>
 
             </div>
             
