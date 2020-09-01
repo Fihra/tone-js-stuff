@@ -48,6 +48,7 @@ const Keyboard = () => {
 
     const [osc, setOsc] = useState(SynthManager);
     const [volume, setVolume] = useState(volumeManager);
+    const [testVolume, setTestVolume] = useState(10);
 
     useEffect(() => {
         // mainVolume = new Tone.Volume({
@@ -57,19 +58,22 @@ const Keyboard = () => {
 
     useEffect(() => {
         // console.log(volumeManager.vol);
+        
     }, []);
 
     const playNote = (note) => {
         const timeNow = Tone.now();
         let savedNote = Tone.Frequency(note, "midi").toNote();
-        osc.main.chain(volumeManager.vol, Tone.Master)
+        // osc.main.chain(volumeManager.vol, Tone.Master)
+        osc.main.connect(volumeManager.vol);
         osc.main.triggerAttack(savedNote, timeNow).toDestination();
     }
 
     const stopNote = (note) => {
         const timeNow = Tone.now();
         let savedNote = Tone.Frequency(note, "midi").toNote();
-        osc.main.chain(volumeManager.vol, Tone.Master)
+        // osc.main.chain(volumeManager.vol, Tone.Master)
+        osc.main.connect(volumeManager.vol);
         osc.main.triggerRelease(savedNote, timeNow + 0.1).toDestination();
     }
 
@@ -89,12 +93,13 @@ const Keyboard = () => {
         let newVolume = new Tone.Volume({
             volume: event.target.value
         })
-        // console.log(newVolume)
-        // console.log(event.target.value);
-        setVolume(newVolume)
-        // setVolume({vol: new Tone.Volume({
-        //     volume: event.target.value
-        // })});
+        // console.log(newVolume);
+        setVolume({vol: newVolume})
+    }
+
+    const handleSecondChange = (event) => {
+        console.log(event.target.value);
+        setTestVolume(event.target.value);
     }
 
     return(
@@ -111,8 +116,9 @@ const Keyboard = () => {
                 {SynthChoice()}
             </select>
             <div className="controls-container">
-            <label>Volume</label>
-            <input type='range' min='0' max='100' value={10} onChange={(e) => handleVolume(e)}></input>
+            <label>Volume: {volume.vol._unmutedVolume}</label>
+            <input type='range' min='-60' max='100' value={volume.vol._unmutedVolume} onChange={(e) => handleVolume(e)}></input>
+
             </div>
             
         </div>
