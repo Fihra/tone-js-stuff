@@ -69,3 +69,17 @@ Custom CSS
   position: relative;
   
 }
+
+.envelope-container {
+  padding-bottom: 5%;
+}
+
+.adsr-container {
+  position: relative;
+  padding-top: 5%;
+}
+
+
+.adsr-slider {
+  transform: rotate(270deg);
+}

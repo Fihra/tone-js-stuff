@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as Tone from 'tone';
 import { Piano, MidiNumbers, KeyboardShortcuts } from 'react-piano';
 import 'react-piano/dist/styles.css';
+import { FFT } from 'tone';
 
 const regular = {
     name: "Synth",
@@ -47,6 +48,14 @@ const PanningManager = {
 
 let testPanner = new Tone.Panner(-1);
 
+let testSynth = new Tone.AMSynth({
+    oscillator: {
+        type: 'sine'
+    }
+});
+
+let tremolo = new Tone.Tremolo(9, 0.75).toDestination().start();
+
 const Keyboard = () => {
 
     const [osc, setOsc] = useState(SynthManager);
@@ -58,9 +67,22 @@ const Keyboard = () => {
     const [sustainLevel, setSustainLevel] = useState(0);
     const [releaseLevel, setReleaseLevel] = useState(0);
 
-    useEffect(() => {
+    const [tremoloOn, setTremoloOn] = useState(false);
 
-    }, [])
+    useEffect(() => {
+        if(tremoloOn){
+            
+            // testTremolo();
+        } else{
+            // osc.main.triggerRelease();
+        }
+    }, [tremoloOn])
+
+    const testTremolo = () => {
+        console.log("I'm on");
+        osc.main.chain(tremolo, Tone.Destination);
+        osc.main.triggerAttackRelease("C3", "1n");
+    }
 
     const playNote = (note) => {
         const timeNow = Tone.now();
@@ -77,8 +99,19 @@ const Keyboard = () => {
                 release: releaseLevel
             }
         })
+        let dsp = new Tone.FFT(1024);
 
-        osc.main.triggerAttack(savedNote, timeNow).toDestination();
+        if(tremoloOn){
+            console.log("is it ON?");
+            // osc.main.connect(tremolo);
+            osc.main.triggerAttack(savedNote, timeNow).connect(tremolo);
+        }
+        else{
+            osc.main.triggerAttack(savedNote, timeNow).toDestination().connect(tremolo);
+        }
+        // osc.main.disconnect(tremolo);
+
+        
 
     }
 
@@ -88,7 +121,8 @@ const Keyboard = () => {
         osc.main.volume.value = volume;
 
         // osc.main.disconnect(testPanner);
-        osc.main.triggerRelease(savedNote, timeNow + 0.1).toDestination();
+        // osc.main.disconnect(tremolo);
+        osc.main.triggerRelease(savedNote, timeNow + 0.1);
     }
 
     const SynthChoice = () => {
@@ -165,24 +199,27 @@ const Keyboard = () => {
 
             {/* <label>Panning: {} </label>
             <input type ='range' min='-1' max='1' value={0.5} step='0.1' onChange={(e) => handlePan(e)}></input> */}
-            <div>
-                <label>Envelope</label>
-                <div>
+            <div className='envelope-container'>
+                <h3>Envelope</h3>
+                <div className='adsr-container'>
                     <label>Attack: {attackLevel}</label>
-                    <input type='range' min='0' max='1' value={attackLevel} step='0.01' onChange={(e) => handleAttack(e)}></input>
+                    <input className="adsr-slider" type='range' min='0' max='1' value={attackLevel} step='0.01' onChange={(e) => handleAttack(e)}></input>
 
                     <label>Decay: {decayLevel}</label>
-                    <input type='range' min='0' max='1' value={decayLevel} step='0.01' onChange={(e) => handleDecay(e)}></input>
+                    <input className="adsr-slider" type='range' min='0' max='1' value={decayLevel} step='0.01' onChange={(e) => handleDecay(e)}></input>
 
                     <label>Sustain: {sustainLevel}</label>
-                    <input type='range' min='0' max='1' value={sustainLevel} step='0.01' onChange={(e) => handleSustain(e)}></input>
+                    <input className="adsr-slider" type='range' min='0' max='1' value={sustainLevel} step='0.01' onChange={(e) => handleSustain(e)}></input>
 
                     <label>Release: {releaseLevel}</label>
-                    <input type='range' min='0' max='1' value={releaseLevel} step='0.01' onChange={(e) => handleRelease(e)}></input>
+                    <input className="adsr-slider" type='range' min='0' max='1' value={releaseLevel} step='0.01' onChange={(e) => handleRelease(e)}></input>
                 </div>
             </div>
 
             </div>
+
+            {/* <label>Tremolo</label>
+            <button onClick={() => setTremoloOn(!tremoloOn)}>{tremoloOn === true ? "On" : "Off"}</button> */}
             
         </div>
     )
