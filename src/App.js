@@ -3,6 +3,7 @@ import './App.css';
 // import { Synth, now} from 'tone';
 import * as Tone from 'tone';
 import Keyboard from './components/Keyboard';
+import Composition from './components/Composition';
 
 const App = () => {
   const synth = new Tone.Synth().toDestination();
@@ -120,6 +121,7 @@ const App = () => {
       {/* {testEffects3()} */}
       {/* {testSignals()} */}
       <Keyboard/>
+      <Composition/>
     </div>
   );
 }

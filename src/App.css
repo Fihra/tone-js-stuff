@@ -79,7 +79,21 @@ Custom CSS
   padding-top: 5%;
 }
 
-
 .adsr-slider {
   transform: rotate(270deg);
+}
+
+.music-container {
+  padding-top: 2%;
+}
+
+.note-container {
+  display: inline-block;
+  border: 1px solid black;
+  text-align: justify;
+  padding: 40px;
+}
+
+.note-container label {
+  display: block;
 }

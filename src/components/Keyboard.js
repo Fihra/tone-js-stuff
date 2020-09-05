@@ -102,7 +102,7 @@ const Keyboard = () => {
         let dsp = new Tone.FFT(1024);
 
         if(tremoloOn){
-            console.log("is it ON?");
+            // console.log("is it ON?");
             // osc.main.connect(tremolo);
             osc.main.triggerAttack(savedNote, timeNow).connect(tremolo);
         }
@@ -194,8 +194,8 @@ const Keyboard = () => {
             <div className="controls-container">
             <label>Volume: {volume} db</label>
             <input type='range' min='-60' max='100' value={volume} onChange={(e) => handleVolume(e)}></input>
-            <label>Pan: {panLevel.panner.pan.value} </label>
-            <input type ='range' min='-1' max='1' value={panLevel.panner.pan.value} step='0.1' onChange={(e) => handlePan(e)}></input>
+            {/* <label>Pan: {panLevel.panner.pan.value} </label>
+            <input type ='range' min='-1' max='1' value={panLevel.panner.pan.value} step='0.1' onChange={(e) => handlePan(e)}></input> */}
 
             {/* <label>Panning: {} </label>
             <input type ='range' min='-1' max='1' value={0.5} step='0.1' onChange={(e) => handlePan(e)}></input> */}
