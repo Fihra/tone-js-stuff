@@ -4,19 +4,15 @@ import * as Tone from 'tone';
 let plucker = new Tone.PluckSynth().toDestination();
 let duo = new Tone.FMSynth().toDestination();
 let notes = ["C2", "Eb2", "G2", "Eb2", null, "Ab2", "G2", null, "Eb2", "Bb1", "Eb2", "Bb1", "Ab2", "G2", null, "Bb1"];
-let counter = 0;
 
 let noteChoices = ["C", "D", "E", "F","G", "A", "B", {"rest": null}];
 let accidental = ["#", "b"];
-
-
 
 const Composition = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [musicNotes, setMusicNotes] = useState(notes);
 
     const synthPart = new Tone.Sequence( (time, note) => {
-        // console.log(time);
         plucker.triggerAttackRelease(note, "10hz", time + 0.1);
     }, musicNotes, "16n");
 
@@ -28,12 +24,9 @@ const Composition = () => {
             Tone.Transport.start();
             // loopBeat.start(0);
         } else {
-            // console.log("stopppppp");
             synthPart.stop();
-            
             Tone.Transport.cancel(0);
             Tone.Transport.stop();
-
         }
     }, [isPlaying])
 
@@ -53,17 +46,19 @@ const Composition = () => {
 
     const addAccidental = (newNote, givenAccidental) => {
         let copiedNotes = [...newNote];
-        // console.log(givenAccidental);
+
         if(newNote.length === 2){
-            return copiedNotes.splice(1, 0, givenAccidental);
+            copiedNotes.splice(1, 0, givenAccidental);
         } else if(newNote.length === 3){
-            return copiedNotes[1] = accidental[0];
+            givenAccidental === "#" ? 
+            copiedNotes[1] = accidental[0]:
+            copiedNotes[1] = accidental[1]
         }
+        return joinNotes(copiedNotes);
     }
 
     const handleNoteChange = (note, i, e) => {
         let copyNoteCollection = [...musicNotes];
-        
         if(typeof(note) === 'object'){
             console.log(note);
             copyNoteCollection[i] = note;
@@ -71,8 +66,7 @@ const Composition = () => {
 
         } else {
             let newNote = note.split("");
-            newNote[0] = e.target.value;
-            
+            newNote[0] = e.target.value;           
             copyNoteCollection[i] = joinNotes(newNote);
             setMusicNotes(copyNoteCollection);
         }
@@ -92,30 +86,20 @@ const Composition = () => {
                     updatedNote = newNote.filter(item => {
                         return (item !== "b") && (item !== "#")
                     });
+                    updatedNote = joinNotes(updatedNote);
                     break;
                 case "#":
                     updatedNote = addAccidental(newNote, accidental[0])
                     break;
                 case "b":
-                    // updatedNote = [...newNote];
-                    // if(newNote.length === 2){
-                    //     updatedNote.splice(1, 0, accidental[0]);
-                    // } else if(newNote.length === 3){
-                    //     updatedNote[1] = accidental[0];
-                    // }
                     updatedNote = addAccidental(newNote, accidental[1])
-                    console.log("Add b");
                     break;
                 default:
                     break;
             }
-            console.log(updatedNote);
-            // copyNoteCollection[i] = joinNotes(updatedNote);
-            // setMusicNotes(copyNoteCollection);
+            copyNoteCollection[i] = updatedNote;
+            setMusicNotes(copyNoteCollection);
         }
-
-        
-
     }
 
     const showComposition = () => {
