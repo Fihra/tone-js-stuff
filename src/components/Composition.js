@@ -5,7 +5,7 @@ let plucker = new Tone.PluckSynth().toDestination();
 let duo = new Tone.FMSynth().toDestination();
 let notes = ["C2", "Eb2", "G2", "Eb2", null, "Ab2", "G2", null, "Eb2", "Bb1", "Eb2", "Bb1", "Ab2", "G2", null, "Bb1"];
 
-let noteChoices = ["C", "D", "E", "F","G", "A", "B", {"rest": null}];
+let noteChoices = ["C", "D", "E", "F","G", "A", "B", {"Rest": null}];
 let accidental = ["#", "b"];
 
 const Composition = () => {
@@ -59,18 +59,24 @@ const Composition = () => {
 
     const handleNoteChange = (note, i, e) => {
         let copyNoteCollection = [...musicNotes];
-        if(typeof(note) === 'object'){
-            console.log(note);
-            copyNoteCollection[i] = note;
+        // console.log(e.target.value );
+        if(e.target.value === 'Rest'){
+            // console.log(noteChoices[7]["Rest"]);
+            copyNoteCollection[i] = noteChoices[7]["Rest"];
             setMusicNotes(copyNoteCollection);
 
         } else {
-            let newNote = note.split("");
-            newNote[0] = e.target.value;           
-            copyNoteCollection[i] = joinNotes(newNote);
-            setMusicNotes(copyNoteCollection);
-        }
-        
+            // console.log(note);
+            if(note ===  noteChoices[7]["Rest"]){
+                copyNoteCollection[i] = `${e.target.value}2`;
+                setMusicNotes(copyNoteCollection);
+            } else {
+                let newNote = note.split("");
+                newNote[0] = e.target.value;           
+                copyNoteCollection[i] = joinNotes(newNote);
+                setMusicNotes(copyNoteCollection);
+            }   
+        }   
     }
 
     const handleAccidentalChange = (note, i, e) => {
