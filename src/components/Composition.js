@@ -2,29 +2,63 @@ import React, { useState, useEffect } from 'react';
 import * as Tone from 'tone';
 
 let plucker = new Tone.PluckSynth().toDestination();
+let bassSynth = new Tone.MembraneSynth().toDestination();
+let cymbalSynth = new Tone.MetalSynth(
+    {
+        frequency : 100 ,
+        envelope : {
+        attack : 0.025 ,
+        decay : 0.5,
+        release : 0.5
+        }
+        ,
+        harmonicity : 5.1 ,
+        modulationIndex : 32 ,
+        resonance : 2000 ,
+        octaves : 0.5
+        }        
+).toDestination(); 
 let duo = new Tone.FMSynth().toDestination();
 let notes = ["C2", "Eb2", "G2", "Eb2", null, "Ab2", "G2", null, "Eb2", "Bb1", "Eb2", "Bb1", "Ab2", "G2", null, "Bb1"];
 
 let noteChoices = ["C", "D", "E", "F","G", "A", "B", {"Rest": null}];
 let accidental = ["#", "b"];
 
+let bassDrumPart = ["C2", null, null, null, "C2", null, null, null, "C2", null, null, null, "C2", null, null, null,];
+let cymbalSynthPart = [50, null, 50, null, 50, null, 50, null, 50, null, 50, null, 50, null, 50, null];
+
 const Composition = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [musicNotes, setMusicNotes] = useState(notes);
+    const [tempo, setTempo] = useState(120);
 
     const synthPart = new Tone.Sequence( (time, note) => {
         plucker.triggerAttackRelease(note, "10hz", time + 0.1);
     }, musicNotes, "16n");
+
+    const drumPart = new Tone.Sequence((time, note) => {
+        bassSynth.triggerAttackRelease(note, "5hz", time + 0.1);
+    }, bassDrumPart, "16n");
+
+    const cymbalPart = new Tone.Sequence((time, note) => {
+        cymbalSynth.volume.value = -20;
+        cymbalSynth.triggerAttackRelease(note, "16n", time + 0.1);
+    }, cymbalSynthPart, "16n")
 
     useEffect(() => {
         if(isPlaying){
             // let loopBeat = new Tone.Loop((time) => song(time), '16n');
             // Tone.Transport.bpm.value = 100;
             synthPart.start();
+            drumPart.start();
+            cymbalPart.start();
+            Tone.Transport.bpm.value = tempo;
             Tone.Transport.start();
             // loopBeat.start(0);
         } else {
             synthPart.stop();
+            drumPart.stop();
+            cymbalPart.stop();
             Tone.Transport.cancel(0);
             Tone.Transport.stop();
         }
@@ -108,6 +142,10 @@ const Composition = () => {
         }
     }
 
+    const handleTempo = (e) => {
+        setTempo(e.target.value);
+    }
+
     const showComposition = () => {
         return musicNotes.map((note, i) => {   
             return (
@@ -130,6 +168,8 @@ const Composition = () => {
         <div>
             Composition
             <button onClick={()=>setIsPlaying(!isPlaying)}>{isPlaying ? "Stop" : "Play"}</button>
+            <label>Tempo: {tempo}</label>
+            <input type="range" min="40" max="200" value={tempo} onChange={(e) => handleTempo(e)}></input>
             <div className="music-container">
                  {showComposition()}
             </div>
